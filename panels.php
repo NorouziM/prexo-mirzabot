@@ -10,6 +10,7 @@ require_once __DIR__ . '/WGDashboard.php';
 require_once __DIR__ . '/s_ui.php';
 require_once __DIR__ . '/ibsng.php';
 require_once __DIR__ . '/mikrotik.php';
+require_once __DIR__ . '/vpn_subscription.php';
 
 class ManagePanel
 {
@@ -367,6 +368,23 @@ class ManagePanel
                 $Output['subscription_url'] = $password;
                 $Output['configs'] = [];
             }
+        } elseif ($Get_Data_Panel['type'] == "vpn_subscription") {
+            $resp = adduser_vs($Get_Data_Panel['name_panel'], $usernameC, $data_limit, $expire, $Data_Config['from_id']);
+            $decoded = vs_decode($resp);
+            if (!$decoded['ok']) {
+                return array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $decoded['msg']
+                );
+            }
+            $subscription_url = $decoded['data']['endpoint']; // full /sub/<id> URL
+            if ($inoice != false) {
+                $subscription_url = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+            }
+            $Output['status'] = 'successful';
+            $Output['username'] = $usernameC;
+            $Output['subscription_url'] = $subscription_url;
+            $Output['configs'] = [];
         } else {
             $Output['status'] = 'Unsuccessful';
             $Output['msg'] = 'Panel Not Found';
@@ -883,6 +901,35 @@ class ManagePanel
                     'sub_last_user_agent' => null,
                 );
             }
+        } elseif ($Get_Data_Panel['type'] == "vpn_subscription") {
+            $resp = getuser_vs($Get_Data_Panel['name_panel'], $username);
+            $decoded = vs_decode($resp);
+            if (!$decoded['ok']) {
+                $Output = array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $decoded['msg']
+                );
+            } else {
+                $sub = $decoded['data'];
+                $expire = empty($sub['expireAt']) ? 0 : strtotime($sub['expireAt']);
+                $subscription_url = vs_base($Get_Data_Panel) . "/sub/" . $sub['endpoint'];
+                if ($inoice != false) {
+                    $subscription_url = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                }
+                $Output = array(
+                    'status' => $sub['status'],
+                    'username' => $username,
+                    'data_limit' => intval($sub['dataLimitBytes']),
+                    'expire' => $expire,
+                    'online_at' => null,
+                    'used_traffic' => intval($sub['usedTrafficBytes']),
+                    'links' => [],
+                    'subscription_url' => $subscription_url,
+                    'sub_updated_at' => null,
+                    'sub_last_user_agent' => null,
+                    'uuid' => $sub['uuid'] ?? null
+                );
+            }
         } else {
             $Output = array(
                 'status' => 'Unsuccessful',
@@ -1238,6 +1285,20 @@ class ManagePanel
                     'username' => $username,
                 );
             }
+        } elseif ($Get_Data_Panel['type'] == "vpn_subscription") {
+            $resp = removeuser_vs($Get_Data_Panel['name_panel'], $username);
+            $decoded = vs_decode($resp);
+            if (!$decoded['ok']) {
+                $Output = array(
+                    'status' => 'Unsuccessful',
+                    'msg' => $decoded['msg']
+                );
+            } else {
+                $Output = array(
+                    'status' => 'successful',
+                    'username' => $username,
+                );
+            }
         } else {
             $Output = array(
                 'status' => 'Unsuccessful',
@@ -1498,6 +1559,32 @@ class ManagePanel
                 'status' => true,
                 'data' => $modify
             );
+        } elseif ($Get_Data_Panel['type'] == "vpn_subscription") {
+            // extend()/extra_*() hand us absolute targets: data_limit in bytes
+            // (0 = unlimited) and/or expire as a unix ts (0 = never). Translate to
+            // the update API's GB + ISO date. Send 0/never explicitly so an
+            // "extend to unlimited" actually clears the prior bound.
+            $body = array();
+            if (array_key_exists('data_limit', $config)) {
+                $body['limit'] = vs_limit_gb($config['data_limit']);
+            }
+            if (array_key_exists('expire', $config)) {
+                $body['expireAt'] = intval($config['expire']) === 0 ? null : date('c', $config['expire']);
+            }
+            if (empty($body)) {
+                return array('status' => true, 'data' => null);
+            }
+            $modify = vs_decode(update_vs($name_panel, $username, $body));
+            if (!$modify['ok']) {
+                return array(
+                    'status' => false,
+                    'msg' => $modify['msg']
+                );
+            }
+            return array(
+                'status' => true,
+                'data' => $modify['data']
+            );
         }
     }
     function Change_status($username, $name_panel)
@@ -1596,6 +1683,13 @@ class ManagePanel
             $ManagePanel->Modifyuser($username, $name_panel, $configs);
             $Output = array(
                 'status' => 'successful',
+                'msg' => null
+            );
+        } elseif ($Get_Data_Panel['type'] == "vpn_subscription") {
+            // The API exposes cancel (-> disabled) but no re-enable, so a toggle
+            // can't round-trip. Report unsupported rather than half-working.
+            $Output = array(
+                'status' => 'Unsuccessful',
                 'msg' => null
             );
         }
@@ -1735,6 +1829,18 @@ class ManagePanel
             ResetUserDataUsages_ui($username, $name_panel);
             return array(
                 'status' => true
+            );
+        } elseif ($panel['type'] == "vpn_subscription") {
+            $reset = vs_decode(reset_vs($panel['name_panel'], $username));
+            if (!$reset['ok']) {
+                return array(
+                    'status' => false,
+                    'msg' => $reset['msg']
+                );
+            }
+            return array(
+                'status' => true,
+                'msg' => 'successful'
             );
         }
     }
@@ -1926,6 +2032,13 @@ class ManagePanel
                 "volume" => $data_limit_new,
                 "expiry" => $time_new
             );
+        } elseif ($panel['type'] == "vpn_subscription") {
+            // Reset-style methods already ran ResetUserDataUsage above; here we
+            // only commit the new absolute limit + expiry via Modifyuser/update.
+            $data = array(
+                'data_limit' => $data_limit_new,
+                'expire' => $time_new,
+            );
         }
         $extend = $this->Modifyuser($username, $panel['name_panel'], $data);
         if ($extend['status'] == false) {
@@ -2038,6 +2151,10 @@ class ManagePanel
         } elseif ($panel['type'] == "s_ui") {
             $data = array(
                 "volume" => $new_limit,
+            );
+        } elseif ($panel['type'] == "vpn_subscription") {
+            $data = array(
+                'data_limit' => $new_limit,
             );
         }
         $extra_volume = $this->Modifyuser($username_account, $panel['name_panel'], $data);
@@ -2156,6 +2273,10 @@ class ManagePanel
         } elseif ($panel['type'] == "s_ui") {
             $data = array(
                 "expiry" => $new_limit,
+            );
+        } elseif ($panel['type'] == "vpn_subscription") {
+            $data = array(
+                'expire' => $new_limit,
             );
         }
         $extra_time = $this->Modifyuser($username_account, $panel['name_panel'], $data);

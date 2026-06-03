@@ -1203,6 +1203,9 @@ $keyboardtypepanel = json_encode([
             ['text' => $textbotlang['keyboard']['mikrotik'], 'callback_data' => 'typepanel#mikrotik']
         ],
         [
+            ['text' => $textbotlang['keyboard']['vpnSubscription'], 'callback_data' => 'typepanel#vpn_subscription']
+        ],
+        [
             ['text' => $textbotlang['Admin']['backAdminBtn'], 'callback_data' => 'admin']
         ]
     ],

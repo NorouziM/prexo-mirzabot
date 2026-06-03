@@ -2285,6 +2285,7 @@ ID пользователя: %s
                 'groupShowCard' => '♻️ Массовое отображение номера карты',
                 'groupVolumeOrTime' => '🔋 Массовый трафик или время',
                 'hiddify' => 'Hiddify',
+                'vpnSubscription' => '🌐 Подписка (API)',
                 'hidePanel' => 'Скрыть панель',
                 'hidePanelForAgent' => '❌ Скрыть панель для агента',
                 'hidePanelForUser' => '🫣 Скрыть панель для пользователя',

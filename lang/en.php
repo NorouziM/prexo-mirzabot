@@ -2285,6 +2285,7 @@ We hope you had a good experience with the ease and speed of your service. If yo
                 'groupShowCard' => '♻️ Bulk card number display',
                 'groupVolumeOrTime' => '🔋 Bulk volume or time',
                 'hiddify' => 'Hiddify',
+                'vpnSubscription' => '🌐 Subscription API',
                 'hidePanel' => 'Hide panel',
                 'hidePanelForAgent' => '❌ Hide a panel for the agent',
                 'hidePanelForUser' => '🫣 Hide panel for a user',

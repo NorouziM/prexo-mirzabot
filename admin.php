@@ -677,7 +677,7 @@ if (in_array($text, $textadmin) || $datain == "admin") {
         savedata("save", "username", "null");
         savedata("save", "password", "null");
         return;
-    } elseif ($userdata['type'] == "s_ui" || $userdata['type'] == "WGDashboard") {
+    } elseif ($userdata['type'] == "s_ui" || $userdata['type'] == "WGDashboard" || $userdata['type'] == "vpn_subscription") {
         sendmessage($from_id, $textbotlang['Admin']['adminphp']['ask_send_token'], $backadmin, 'HTML');
         step('add_password_panel', $from_id);
         savedata("save", "username", "null");
@@ -3599,6 +3599,13 @@ elseif (preg_match('/sendmessageuser_(\w+)/', $datain, $dataget)) {
             $total_hdd_space = round($result['total-hdd-space'] / pow(1024, 3), 2);
             $total_memory = round($result['total-memory'] / pow(1024, 3), 2);
             sendmessage($from_id, sprintf($textbotlang['Admin']['adminphp']['msg_time_name'], $result['platform'], $result['version'], $result['uptime'], $result['architecture-name'], $result['board-name'], $result['build-time'], $result['cpu'], $result['cpu-count'], $result['cpu-frequency'], $result['cpu-load'], $total_hdd_space, $free_hdd_space, $total_memory, $free_memory, $result['write-sect-since-reboot'], $result['write-sect-total']), $option_mikrotik, 'HTML');
+        }
+    } elseif ($marzban_list_get['type'] == "vpn_subscription") {
+        $health = vs_decode(healthcheck_vs($marzban_list_get['name_panel']));
+        if ($health['ok']) {
+            sendmessage($from_id, $textbotlang['Admin']['adminphp']['btn_panel'], $optionhiddfy, 'HTML');
+        } else {
+            sendmessage($from_id, $textbotlang['Admin']['adminphp']['err_invalid_panel_link'], $optionhiddfy, 'HTML');
         }
     } else {
         sendmessage($from_id, $textbotlang['Admin']['adminphp']['ask_select_3'], $optionMarzban, 'HTML');
