@@ -1375,18 +1375,10 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
     ]);
     $product = $stmt->rowCount();
     savedata("clear", "id_invoice", $nameloc['id_invoice']);
+    // Renew is plan-based only (same as a fresh purchase): no custom volume/days
+    // fallback. When the panel has no plans defined there's nothing to renew with.
     if ($product == 0) {
-        $textcustom = sprintf($textbotlang['hardcoded']['customVolumePrompt'], $custompricevalue, $mainvolume, $maxvolume);
-        sendmessage($from_id, $textcustom, $backuser, 'html');
-        deletemessage($from_id, $message_id);
-        step('gettimecustomvolomforextend', $from_id);
-        return;
-    }
-    if ($nameloc['name_product'] == $textbotlang['extracted']['index_php']['customVolumeButton'] || $nameloc['name_product'] == $textbotlang['extracted']['index_php']['customServiceButton']) {
-        $textcustom = sprintf($textbotlang['hardcoded']['customVolumePrompt2'], $custompricevalue, $mainvolume, $maxvolume);
-        sendmessage($from_id, $textcustom, $backuser, 'html');
-        deletemessage($from_id, $message_id);
-        step('gettimecustomvolomforextend', $from_id);
+        sendmessage($from_id, $textbotlang['extracted']['index_php']['renewNotPossibleCurrentPlan'], $keyboard, 'HTML');
         return;
     }
     if ($setting['statuscategory'] == "offcategory") {
