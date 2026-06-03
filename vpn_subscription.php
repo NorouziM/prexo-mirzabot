@@ -104,7 +104,11 @@ function vs_days_from_expire($expire)
 
 function vs_limit_gb($data_limit_bytes)
 {
-    return intval($data_limit_bytes) === 0 ? 0 : round($data_limit_bytes / VS_ONE_GB, 2);
+    // Full precision, NOT rounded: the API multiplies back by 1 GiB and rounds to
+    // the nearest byte, so an exact GB float round-trips losslessly. Rounding to a
+    // couple of decimals here collapses small (MB-scale) test-account volumes to 0,
+    // which the API reads as UNLIMITED. 0 bytes stays 0 (genuinely unlimited).
+    return intval($data_limit_bytes) === 0 ? 0 : $data_limit_bytes / VS_ONE_GB;
 }
 
 /**
