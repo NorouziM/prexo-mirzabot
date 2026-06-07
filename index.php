@@ -1582,7 +1582,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
     } else {
         $pricelastextend = $product['price_product'];
     }
-    $textextend = sprintf($textbotlang['hardcoded']['renewInvoiceCreated'], $nameloc['username'], $product['name_product'], $pricelastextend, $product['Service_time'], $product['Volume_constraint'], $product['note'], $user['Balance']);
+    $textextend = sprintf($textbotlang['hardcoded']['renewInvoiceCreated'], $nameloc['username'], $product['name_product'], $pricelastextend, $product['Service_time'], $product['Volume_constraint'], $product['note'], $user['Balance']) . renewVolumeNote($marzban_list_get['Methodextend']);
     if ($user['step'] == "getvolumecustomuserforextend") {
         sendmessage($from_id, $textextend, $keyboardextend, 'HTML');
     } else {
@@ -1662,7 +1662,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
         $info_product['Service_time'] = $textbotlang['users']['status']['unlimited'];
     if ($info_product['price_product'] < 0)
         $info_product['price_product'] = 0;
-    $textextend = sprintf($textbotlang['hardcoded']['renewInvoiceCreated2'], $nameloc['username'], $info_product['name_product'], $info_product['price_product'], $info_product['Service_time'], $info_product['Volume_constraint'], $info_product['note'], $user['Balance']);
+    $textextend = sprintf($textbotlang['hardcoded']['renewInvoiceCreated2'], $nameloc['username'], $info_product['name_product'], $info_product['price_product'], $info_product['Service_time'], $info_product['Volume_constraint'], $info_product['note'], $user['Balance']) . renewVolumeNote($marzban_list_get['Methodextend']);
     $keyboardextend = json_encode([
         'inline_keyboard' => [
             [

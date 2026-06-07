@@ -1786,6 +1786,21 @@ function sendMessageService($panel_info, $config, $sub_link, $username_service, 
         }
     }
 }
+// Tells the user, in the renew pre-invoice, how their volume behaves on renewal.
+// The reset-usage methods zero the meter (new quota replaces the old); the others
+// keep remaining traffic and add the new quota on top. Keep this list in sync with
+// the methods that call ResetUserDataUsage inside ManagePanel::extend().
+function renewVolumeNote($method)
+{
+    global $textbotlang;
+    $resetMethods = [
+        $textbotlang['keyboard']['resetVolumeTime'],
+        $textbotlang['keyboard']['resetVolumeAddTime'],
+        $textbotlang['keyboard']['addTimeConvertVolume'],
+    ];
+    $key = in_array($method, $resetMethods) ? 'renewNoteReset' : 'renewNoteAccumulate';
+    return "\n\n" . $textbotlang['hardcoded'][$key];
+}
 function isValidInvitationCode($setting, $fromId, $verfy_status)
 {
     global $textbotlang;
