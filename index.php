@@ -933,7 +933,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
     $statusshowconfig = select("shopSetting", "*", "Namevalue", "configshow", "select")['value'];
     $statusremoveserveice = select("shopSetting", "*", "Namevalue", "backserviecstatus", "select")['value'];
     if (!in_array($status, ["active", "on_hold", "disabled", "Unknown"])) {
-        $textinfo = sprintf($textbotlang['hardcoded']['serviceInfoDetailed'], $status_var, $DataUserOut['username'], $nameloc['Service_location'], $nameloc['name_product'], $lastonline, $LastTraffic, $usedTrafficGb, $RemainingVolume, $Percent, $expirationDate, $day, $nameconfig);
+        $textinfo = sprintf($textbotlang['hardcoded']['serviceInfoDetailed'], $status_var, $DataUserOut['username'], $nameloc['name_product'], $lastonline, $LastTraffic, $usedTrafficGb, $RemainingVolume, $Percent, $expirationDate, $day, $nameconfig);
 
         $keyboardsetting = [
             'inline_keyboard' => [
@@ -1046,6 +1046,13 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
             unset($keyboarddate['change-location']);
             unset($keyboarddate['changelink']);
         }
+        if ($marzban['type'] == "vpn_subscription") {
+            unset($keyboarddate['changelink']);      // API has no link-rotate primitive
+            unset($keyboarddate['changestatus']);    // API has no re-enable; toggle can't round-trip
+            unset($keyboarddate['Extra_time']);      // removed per request
+            unset($keyboarddate['transfor']);        // removed per request
+            unset($keyboarddate['change-location']); // single panel; location is noise
+        }
         if ($marzban['status_extend'] == "off_extend") {
             unset($keyboarddate['Extra_time']);
             unset($keyboarddate['Extra_volume']);
@@ -1101,7 +1108,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
         } else {
             $textconnect = strtr($textbotlang['extracted']['index_php']['lastOnlineTime'], ['{lastonline}' => $lastonline]);
         }
-        $textinfo = sprintf($textbotlang['hardcoded']['serviceInfoFull'], $status_var, $DataUserOut['username'], $userpassword, $nameconfig, $nameloc['Service_location'], $nameloc['name_product'], $LastTraffic, $usedTrafficGb, $RemainingVolume, $Percent, $expirationDate, $day, $textconnect);
+        $textinfo = sprintf($textbotlang['hardcoded']['serviceInfoFull'], $status_var, $DataUserOut['username'], $userpassword, $nameconfig, $nameloc['name_product'], $LastTraffic, $usedTrafficGb, $RemainingVolume, $Percent, $expirationDate, $day, $textconnect);
     }
     if ($user['step'] == "getuseragnetservice") {
         sendmessage($from_id, $textinfo, $keyboardsetting, 'html');
@@ -2987,7 +2994,7 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
     $usertestinfo = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $textbotlang['users']['help']['btninlinebuy'], 'callback_data' => "helpbtn"],
+                ['text' => $textbotlang['users']['help']['btninlinebuy'], 'url' => "https://t.me/+vmRfWdcJQYxkOTRk"],
             ]
         ]
     ]);
@@ -3921,7 +3928,7 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
     $Shoppinginfo = [
         'inline_keyboard' => [
             [
-                ['text' => $textbotlang['users']['help']['btninlinebuy'], 'callback_data' => "helpbtn"],
+                ['text' => $textbotlang['users']['help']['btninlinebuy'], 'url' => "https://t.me/+vmRfWdcJQYxkOTRk"],
             ]
         ]
     ];
@@ -4449,7 +4456,7 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
     $Shoppinginfo = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $textbotlang['users']['help']['btninlinebuy'], 'callback_data' => "helpbtn"],
+                ['text' => $textbotlang['users']['help']['btninlinebuy'], 'url' => "https://t.me/+vmRfWdcJQYxkOTRk"],
             ]
         ]
     ]);
