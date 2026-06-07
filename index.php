@@ -2995,6 +2995,9 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
     $usertestinfo = json_encode([
         'inline_keyboard' => [
             [
+                ['text' => $textbotlang['textbot']['sell'], 'callback_data' => "buy"],
+            ],
+            [
                 ['text' => $textbotlang['users']['help']['btninlinebuy'], 'url' => "https://t.me/+vmRfWdcJQYxkOTRk"],
             ]
         ]
