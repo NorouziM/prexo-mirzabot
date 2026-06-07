@@ -2913,8 +2913,20 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
             return;
         }
     }
-    $limit_usertest = $userlimit['limit_usertest'] - 1;
-    update("user", "limit_usertest", $limit_usertest, "id", $from_id);
+    // Atomic claim — guards the double-tap race: the limit_usertest check far
+    // above and this decrement were separated by several steps, so two quick
+    // requests both passed the check and each created a test account. A single
+    // conditional UPDATE lets only the request that actually consumes remaining
+    // quota (limit_usertest > 0) proceed; the loser gets 0 rows and is rejected.
+    if (!in_array($from_id, $admin_ids)) {
+        $claimTest = $pdo->prepare("UPDATE user SET limit_usertest = limit_usertest - 1 WHERE id = :id AND limit_usertest > 0");
+        $claimTest->execute([':id' => $from_id]);
+        if ($claimTest->rowCount() === 0) {
+            sendmessage($from_id, $textbotlang['users']['usertest']['limitwarning'], $keyboard_buy, 'html');
+            return;
+        }
+        clearSelectCache("user");
+    }
     $randomString = bin2hex(random_bytes(4));
     $text = strtolower($text);
     $marzban_list_get = select("marzban_panel", "*", "code_panel", $name_panel, "select");
@@ -3410,6 +3422,16 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
                     $statuscustom = true;
                 } else {
                     $statuscustom = false;
+                }
+                // $nullproduct above counts products globally; the list shown is
+                // filtered by this location + agent. Without this guard, when plans
+                // exist elsewhere but none here, the user got "select a service"
+                // over an empty list. Show the no-product message instead.
+                $stmtHasProduct = $pdo->query($query);
+                $hasProduct = $stmtHasProduct && $stmtHasProduct->rowCount() > 0;
+                if (!$hasProduct && !$statuscustom) {
+                    sendmessage($from_id, $textbotlang['Admin']['Product']['nullProduct'], null, 'HTML');
+                    return;
                 }
                 $textproduct = $textbotlang['users']['sell']['serviceSelectFirst'];
                 if ($datain == "buy") {
