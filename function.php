@@ -1801,6 +1801,20 @@ function renewVolumeNote($method)
     $key = in_array($method, $resetMethods) ? 'renewNoteReset' : 'renewNoteAccumulate';
     return "\n\n" . $textbotlang['hardcoded'][$key];
 }
+// Human-friendly label for a service in lists. The raw username is a random id
+// (e.g. "33695297_8b9a") that means nothing to users; prefer their custom name,
+// then the plan name, and only fall back to the id if neither exists.
+function serviceLabel($row)
+{
+    $name = trim((string) ($row['note'] ?? ''));
+    if ($name === '') {
+        $name = trim((string) ($row['name_product'] ?? ''));
+    }
+    if ($name === '') {
+        $name = (string) ($row['username'] ?? '');
+    }
+    return $name;
+}
 function isValidInvitationCode($setting, $fromId, $verfy_status)
 {
     global $textbotlang;

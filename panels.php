@@ -905,9 +905,13 @@ class ManagePanel
             $resp = getuser_vs($Get_Data_Panel['name_panel'], $username);
             $decoded = vs_decode($resp);
             if (!$decoded['ok']) {
+                // Normalize a 404 to the "User not found" sentinel the service
+                // page checks for, so a deleted sub is dropped from the user's
+                // list instead of showing a generic error.
+                $notFound = isset($resp['status']) && intval($resp['status']) === 404;
                 $Output = array(
                     'status' => 'Unsuccessful',
-                    'msg' => $decoded['msg']
+                    'msg' => $notFound ? "User not found" : $decoded['msg']
                 );
             } else {
                 $sub = $decoded['data'];
@@ -2033,12 +2037,24 @@ class ManagePanel
                 "expiry" => $time_new
             );
         } elseif ($panel['type'] == "vpn_subscription") {
-            // Reset-style methods already ran ResetUserDataUsage above; here we
-            // only commit the new absolute limit + expiry via Modifyuser/update.
-            $data = array(
-                'data_limit' => $data_limit_new,
-                'expire' => $time_new,
-            );
+            // Expired => clean slate: the old quota is gone, so renew grants a
+            // fresh plan (usage zeroed, limit = plan), never accumulated volume.
+            // Active => keep $data_limit_new from the method above (accumulate).
+            // Time is already correct either way ($time_old was clamped to now
+            // for an expired sub, so $time_new = now + duration).
+            $vsExpired = $data_user['expire'] != 0 && ($data_user['expire'] - time()) <= 0;
+            if ($vsExpired) {
+                $this->ResetUserDataUsage($username, $panel['name_panel']);
+                $data = array(
+                    'data_limit' => $new_limit == 0 ? 0 : $new_limit * pow(1024, 3),
+                    'expire' => $time_new,
+                );
+            } else {
+                $data = array(
+                    'data_limit' => $data_limit_new,
+                    'expire' => $time_new,
+                );
+            }
         }
         $extend = $this->Modifyuser($username, $panel['name_panel'], $data);
         if ($extend['status'] == false) {

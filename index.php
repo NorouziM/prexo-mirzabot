@@ -432,7 +432,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
                 $data = " | {$row['note']}";
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . $data . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "product_" . $row['id_invoice']
                 ],
             ];
@@ -441,7 +441,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "product_" . $row['id_invoice']
                 ],
             ];
@@ -494,7 +494,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
                 $data = " | {$row['note']}";
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . $data . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "product_" . $row['id_invoice']
                 ],
             ];
@@ -503,7 +503,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "product_" . $row['id_invoice']
                 ],
             ];
@@ -557,7 +557,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
                 $data = " | {$row['note']}";
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . $data . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "product_" . $row['id_invoice']
                 ],
             ];
@@ -566,7 +566,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "product_" . $row['id_invoice']
                 ],
             ];
@@ -749,7 +749,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
                     $data = " | {$row['note']}";
                 $keyboardlists['inline_keyboard'][] = [
                     [
-                        'text' => "✨" . $row['username'] . $data . "✨",
+                        'text' => "✨ " . serviceLabel($row) . " ✨",
                         'callback_data' => "product_" . $row['id_invoice']
                     ],
                 ];
@@ -758,7 +758,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $keyboardlists['inline_keyboard'][] = [
                     [
-                        'text' => "✨" . $row['username'] . "✨",
+                        'text' => "✨ " . serviceLabel($row) . " ✨",
                         'callback_data' => "product_" . $row['id_invoice']
                     ],
                 ];
@@ -1052,6 +1052,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
             unset($keyboarddate['Extra_time']);      // removed per request
             unset($keyboarddate['transfor']);        // removed per request
             unset($keyboarddate['change-location']); // single panel; location is noise
+            unset($keyboarddate['config']);          // removed per request (link is enough)
         }
         if ($marzban['status_extend'] == "off_extend") {
             unset($keyboarddate['Extra_time']);
@@ -6224,7 +6225,7 @@ if (preg_match('/^sendresidcart-(.*)/', $datain, $dataget)) {
                 $data = " | {$row['note']}";
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . $data . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "extend_" . $row['id_invoice']
                 ],
             ];
@@ -6233,7 +6234,7 @@ if (preg_match('/^sendresidcart-(.*)/', $datain, $dataget)) {
         while ($row = mysqli_fetch_assoc($result)) {
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "extend_" . $row['id_invoice']
                 ],
             ];
@@ -6281,7 +6282,7 @@ if (preg_match('/^sendresidcart-(.*)/', $datain, $dataget)) {
                 $data = " | {$row['note']}";
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . $data . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "extend_" . $row['id_invoice']
                 ],
             ];
@@ -6290,7 +6291,7 @@ if (preg_match('/^sendresidcart-(.*)/', $datain, $dataget)) {
         while ($row = mysqli_fetch_assoc($result)) {
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "extend_" . $row['id_invoice']
                 ],
             ];
@@ -6339,7 +6340,7 @@ if (preg_match('/^sendresidcart-(.*)/', $datain, $dataget)) {
                 $data = " | {$row['note']}";
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . $data . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "extend_" . $row['id_invoice']
                 ],
             ];
@@ -6348,7 +6349,7 @@ if (preg_match('/^sendresidcart-(.*)/', $datain, $dataget)) {
         while ($row = mysqli_fetch_assoc($result)) {
             $keyboardlists['inline_keyboard'][] = [
                 [
-                    'text' => "✨" . $row['username'] . "✨",
+                    'text' => "✨ " . serviceLabel($row) . " ✨",
                     'callback_data' => "extend_" . $row['id_invoice']
                 ],
             ];
