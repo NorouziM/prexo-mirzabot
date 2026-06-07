@@ -1381,8 +1381,21 @@ function addBackgroundImage($urlimage, $qrCodeResult, $backgroundPath)
     $backgroundWidth = imagesx($backgroundImage);
     $backgroundHeight = imagesy($backgroundImage);
 
-    $x = ($backgroundWidth - $qrCodeWidth) / 2;
-    $y = ($backgroundHeight - $qrCodeHeight) / 2;
+    // Scale the QR down to ~60% of the background width so the branded frame
+    // stays visible around it. The QR carries its own white quiet zone, so it
+    // remains scannable when pasted opaque on the dark background.
+    $target = (int) round(min($backgroundWidth, $backgroundHeight) * 0.60);
+    if ($target > 0 && $qrCodeWidth > 0 && $target < $qrCodeWidth) {
+        $scaledQr = imagecreatetruecolor($target, $target);
+        imagecopyresampled($scaledQr, $qrCodeImage, 0, 0, 0, 0, $target, $target, $qrCodeWidth, $qrCodeHeight);
+        imagedestroy($qrCodeImage);
+        $qrCodeImage = $scaledQr;
+        $qrCodeWidth = $target;
+        $qrCodeHeight = $target;
+    }
+
+    $x = (int) (($backgroundWidth - $qrCodeWidth) / 2);
+    $y = (int) (($backgroundHeight - $qrCodeHeight) / 2);
 
     imagecopy($backgroundImage, $qrCodeImage, $x, $y, 0, 0, $qrCodeWidth, $qrCodeHeight);
 
