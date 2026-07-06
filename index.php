@@ -2995,7 +2995,7 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
     $usertestinfo = json_encode([
         'inline_keyboard' => [
             [
-                ['text' => $textbotlang['textbot']['sell'], 'callback_data' => "buy"],
+                ['text' => $textbotlang['textbot']['sell'], 'callback_data' => "buyfromtest"],
             ],
             [
                 ['text' => $textbotlang['users']['help']['btninlinebuy'], 'url' => "https://t.me/+vmRfWdcJQYxkOTRk"],
@@ -3329,7 +3329,7 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
     }
     step('home', $from_id);
     return;
-} elseif (($text == $textbotlang['textbot']['sell'] || $datain == "buy" || $datain == "buyback" || $text == "/buy" || $text == "buy") && $statusnote) {
+} elseif (($text == $textbotlang['textbot']['sell'] || $datain == "buy" || $datain == "buyfromtest" || $datain == "buyback" || $text == "/buy" || $text == "buy") && $statusnote) {
     if ($setting['get_number'] == "onAuthenticationphone" && $user['step'] != "get_number" && $user['number'] == "none") {
         sendmessage($from_id, $textbotlang['users']['number']['confirming'], $request_contact, 'HTML');
         step('get_number', $from_id);
@@ -3350,7 +3350,7 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
     }
     step("statusnamecustom", $from_id);
     return;
-} elseif ($text == $textbotlang['textbot']['sell'] || $datain == "buy" || $datain == "buybacktow" || $datain == "buyback" || $text == "/buy" || $text == "buy" || $user['step'] == "statusnamecustom") {
+} elseif ($text == $textbotlang['textbot']['sell'] || $datain == "buy" || $datain == "buyfromtest" || $datain == "buybacktow" || $datain == "buyback" || $text == "/buy" || $text == "buy" || $user['step'] == "statusnamecustom") {
     if (!check_active_btn($setting['keyboardmain'], "text_sell")) {
         sendmessage($from_id, $textbotlang['extracted']['index_php']['buttonDisabled'], null, 'HTML');
         return;

@@ -1379,7 +1379,11 @@ function KeyboardProduct($location, $query, $pricediscount, $datakeyboard, $stat
     } else {
         $valuetow = "";
     }
-    while ($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Order plans by monthly volume (5,10,15,30,50 GB) instead of DB insertion
+    // order, so the purchase list reads predictably small→large.
+    usort($rows, fn($a, $b) => intval($a['Volume_constraint']) <=> intval($b['Volume_constraint']));
+    foreach ($rows as $result) {
         $hide_panel = json_decode($result['hide_panel'], true);
         if (in_array($location, $hide_panel))
             continue;
