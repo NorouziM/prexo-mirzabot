@@ -183,7 +183,6 @@ $CartManage = json_encode([
 $trnado = json_encode([
     'keyboard' => [
         [['text' => $textbotlang['keyboard']['apiT']]],
-        [['text' => $textbotlang['keyboard']['setApiAddress']]],
         [['text' => $textbotlang['keyboard']['cashbackIranPay2']]],
         [['text' => $textbotlang['keyboard']['minAmountIranPay2']], ['text' => $textbotlang['keyboard']['maxAmountIranPay2']]],
         [['text' => $textbotlang['keyboard']['setEducationIranPay2']]],

@@ -5877,15 +5877,6 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
     sendmessage($from_id, $textbotlang['Admin']['cronjob']['changedData'], $setting_panel, 'HTML');
     step("home", $from_id);
     update("setting", "removedayc", $text);
-} elseif ($text == $textbotlang['keyboard']['setApiAddress'] && $adminrulecheck['rule'] == "administrator") {
-    $PaySetting = select("PaySetting", "ValuePay", "NamePay", "urlpaymenttron", "select");
-    $texttronseller = sprintf($textbotlang['Admin']['adminphp']['ask_send_address_api'], $PaySetting['ValuePay']);
-    sendmessage($from_id, $texttronseller, $backadmin, 'HTML');
-    step('urlpaymenttron', $from_id);
-} elseif ($user['step'] == "urlpaymenttron") {
-    sendmessage($from_id, $textbotlang['Admin']['SettingnowPayment']['saveApi'], $trnado, 'HTML');
-    update("PaySetting", "ValuePay", $text, "NamePay", "urlpaymenttron");
-    step('home', $from_id);
 } elseif ($text == $textbotlang['keyboard']['editEducation'] && $adminrulecheck['rule'] == "administrator") {
     sendmessage($from_id, $textbotlang['Admin']['Help']['selectName'], $json_list_helpkey, 'HTML');
     step("getnameforedite", $from_id);

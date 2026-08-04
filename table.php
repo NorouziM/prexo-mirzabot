@@ -689,7 +689,6 @@ try {
         ['marchent_tronseller', '0'],
         ['walletaddress', '0'],
         ['statuscardautoconfirm', 'offautoconfirm'],
-        ['urlpaymenttron', 'https://tronseller.storeddownloader.fun/api/GetOrderToken'],
         ['statustarnado', 'offternado'],
         ['apiternado', '0'],
         ['chashbackcart', '0'],
@@ -764,12 +763,8 @@ try {
         foreach ($settings as $setting) {
             $connect->query("INSERT IGNORE INTO PaySetting (NamePay, ValuePay) VALUES ('{$setting[0]}', '{$setting[1]}')");
         }
-
-
-
-
-
     }
+    $pdo->exec("DELETE FROM PaySetting WHERE NamePay = 'urlpaymenttron'");
 } catch (Exception $e) {
     file_put_contents('error_log', $e->getMessage());
 }
